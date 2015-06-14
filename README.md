@@ -26,7 +26,8 @@ You can then configure slackcat through a config file and/or environment variabl
 
 In `/etc/slackcat.conf`, `~/.slackcat.conf` or `./slackcat.conf`
 
-Optional keys: `channel`, `username`, `icon_emoji`.
+Optional keys: `channel`, `username`, `icon_emoji`, `proxy`. See `slackcat-example.conf` for
+a full example.
 
 
 ### Environment Variable
@@ -44,6 +45,11 @@ Optional vars: `SLACKCAT_CHANNEL`, `SLACKCAT_USERNAME`, `SLACKCAT_ICON`
 slackcat will take each line from stdin and post it as a message to Slack:
 
     tail -F logfile | slackcat
+
+Be aware that if a file outputs blank lines, this will result in a 500 error from slack. You can remedy this using
+grep to filter out blank lines:
+
+    tail -F logfile | grep --line-buffered -v '^\s*$' | slackcat
 
 If you'd prefer to provide a message on the command line, you can:
 
