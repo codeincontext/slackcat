@@ -12,9 +12,11 @@ If you have a working go installation run `go get github.com/paulhammond/slackca
 
 First, create a [new Slack Incoming Webhook integration][new-webhook].
 
-Then create a `/etc/slackcat.conf` file, and add your new webhook url:
+Then create a `/etc/slackcat.conf` file, and add your new webhook url. You can optionally specify a proxy if
+your environment requires it (if you do not require a proxy, leave that key out).
 
     {
+        "proxy": "http://proxyserver:3128",
         "webhook_url":"https://my.slack.com/services/hooks/incoming-webhook?token=token"
     }
 
@@ -25,6 +27,11 @@ If you don't have permission to create `/etc/slackcat.conf` then you can create 
 slackcat will take each line from stdin and post it as a message to Slack:
 
     tail -F logfile | slackcat
+
+Be aware that if a file outputs blank lines, this will result in a 500 error from slack. You can remedy this using
+grep to filter out blank lines:
+
+    tail -F logfile | grep --line-buffered -v '^\s*$' | slackcat
 
 If you'd prefer to provide a message on the command line, you can:
 
