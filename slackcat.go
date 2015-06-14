@@ -41,7 +41,7 @@ func (c *Config) Load() error {
 }
 
 func (c *Config) loadEnvVars() {
-	envs := []string{"SLACKCAT_WEBHOOK_URL", "SLACKCAT_CHANNEL", "SLACKCAT_USERNAME", "SLACKCAT_ICON"}
+	envs := []string{"SLACKCAT_WEBHOOK_URL", "SLACKCAT_CHANNEL", "SLACKCAT_USERNAME", "SLACKCAT_ICON", "HTTPS_PROXY"}
 	for _,env := range envs {
 		envVal := os.Getenv(env)
 		if envVal == "" {
@@ -57,6 +57,8 @@ func (c *Config) loadEnvVars() {
 			c.Username = envVal
 		case "SLACKCAT_ICON":
 			c.IconEmoji = envVal
+		case "HTTPS_PROXY":
+			c.Proxy = envVal
 		}
 	}
 }

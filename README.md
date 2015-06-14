@@ -38,7 +38,7 @@ $ export SLACKCAT_WEBHOOK_URL=https://hooks.slack.com/services/super/secret/toke
 
 Will override file config.
 
-Optional vars: `SLACKCAT_CHANNEL`, `SLACKCAT_USERNAME`, `SLACKCAT_ICON`
+Optional vars: `SLACKCAT_CHANNEL`, `SLACKCAT_USERNAME`, `SLACKCAT_ICON`, `HTTPS_PROXY`
 
 ## Usage
 
