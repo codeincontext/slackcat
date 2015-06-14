@@ -23,6 +23,7 @@ type Config struct {
 	Channel    string  `json:"channel"`
 	Username   string  `json:"username"`
 	IconEmoji  string  `json:"icon_emoji"`
+	Proxy      string  `json:"proxy"`
 }
 
 func (c *Config) Load() error {
@@ -40,7 +41,7 @@ func (c *Config) Load() error {
 }
 
 func (c *Config) loadEnvVars() {
-	envs := []string{"SLACKCAT_WEBHOOK_URL", "SLACKCAT_CHANNEL", "SLACKCAT_USERNAME", "SLACKCAT_ICON"}
+	envs := []string{"SLACKCAT_WEBHOOK_URL", "SLACKCAT_CHANNEL", "SLACKCAT_USERNAME", "SLACKCAT_ICON", "HTTPS_PROXY"}
 	for _,env := range envs {
 		envVal := os.Getenv(env)
 		if envVal == "" {
@@ -56,6 +57,8 @@ func (c *Config) loadEnvVars() {
 			c.Username = envVal
 		case "SLACKCAT_ICON":
 			c.IconEmoji = envVal
+		case "HTTPS_PROXY":
+			c.Proxy = envVal
 		}
 	}
 }
@@ -89,6 +92,7 @@ func (c *Config) BindFlags() {
 	pflag.StringVarP(&c.Channel, "channel", "c", c.Channel, "channel")
 	pflag.StringVarP(&c.Username, "name", "n", c.Username, "name")
 	pflag.StringVarP(&c.IconEmoji, "icon", "i", c.IconEmoji, "icon")
+	pflag.StringVarP(&c.Proxy, "proxy", "p", c.Proxy, "proxy")
 }
 
 type SlackMsg struct {
@@ -107,10 +111,20 @@ func (m SlackMsg) Encode() (string, error) {
 	return string(b), nil
 }
 
-func (m SlackMsg) Post(WebhookURL string) error {
+func (m SlackMsg) Post(WebhookURL string, Proxy string) error {
 	encoded, err := m.Encode()
 	if err != nil {
 		return err
+	}
+
+	if len(Proxy) > 0 {
+		proxyUrl, err := url.Parse(Proxy)
+		http.DefaultTransport = &http.Transport{Proxy: http.ProxyURL(proxyUrl)}
+
+		if err != nil {
+			return err
+		}
+
 	}
 
 	resp, err := http.PostForm(WebhookURL, url.Values{"payload": {encoded}})
@@ -148,7 +162,7 @@ func defaultUsername() string {
 
 func main() {
 	pflag.Usage = func() {
-		fmt.Fprintln(os.Stderr, "Usage: slackcat [-c #channel] [-n name] [-i icon] [message]")
+		fmt.Fprintln(os.Stderr, "Usage: slackcat [-c #channel] [-n name] [-i icon] [-p proxy] [message]")
 	}
 
 	cfg := Config{Username: defaultUsername()}
@@ -170,7 +184,7 @@ func main() {
 			IconEmoji: cfg.IconEmoji,
 		}
 
-		err = msg.Post(cfg.WebhookUrl)
+		err = msg.Post(cfg.WebhookUrl, cfg.Proxy)
 		if err != nil {
 			log.Fatalf("Post failed: %v", err)
 		}
@@ -188,7 +202,7 @@ func main() {
 			IconEmoji: cfg.IconEmoji,
 		}
 
-		err = msg.Post(cfg.WebhookUrl)
+		err = msg.Post(cfg.WebhookUrl, cfg.Proxy)
 		if err != nil {
 			log.Fatalf("Post failed: %v", err)
 		}
