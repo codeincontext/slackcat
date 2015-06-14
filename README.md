@@ -28,6 +28,11 @@ slackcat will take each line from stdin and post it as a message to Slack:
 
     tail -F logfile | slackcat
 
+Be aware that if a file outputs blank lines, this will result in a 500 error from slack. You can remedy this using
+grep to filter out blank lines:
+
+    tail -F logfile | grep --line-buffered -v '^\s*$' | slackcat
+
 If you'd prefer to provide a message on the command line, you can:
 
     sleep 300; slackcat "done"
