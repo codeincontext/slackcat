@@ -162,7 +162,7 @@ func defaultUsername() string {
 
 func main() {
 	pflag.Usage = func() {
-		fmt.Fprintln(os.Stderr, "Usage: slackcat [-c #channel] [-n name] [-i icon] [message]")
+		fmt.Fprintln(os.Stderr, "Usage: slackcat [-c #channel] [-n name] [-i icon] [-p proxy] [message]")
 	}
 
 	cfg := Config{Username: defaultUsername()}

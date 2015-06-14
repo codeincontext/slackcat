@@ -70,7 +70,10 @@ Default: Slack Webhook default
 
     echo "we're watching you" | slackcat --icon=:family:
 
+### Proxy
+Default: None
 
+    echo "I am not able to connect directly" | slackcat --proxy=http://proxy.example.com:3128
 
 [Slack]: http://slack.com/
 [new-webhook]: https://my.slack.com/services/new/incoming-webhook
